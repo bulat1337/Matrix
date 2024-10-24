@@ -151,6 +151,36 @@ TEST(matrix_basics, eye)
 	}
 }
 
+// TEST(matrix_basics, diagonalization)
+// {
+// 	size_t dim = 3;
+// 	matrix::matrix_t<double> matrix(dim, dim);
+//
+// 	double id = 1;
+//
+// 	for (size_t row = 0; row < dim; ++row)
+// 	{
+// 		for (size_t col = 0; col < dim; ++col)
+// 		{
+// 			matrix[row][col] = static_cast<double>(id);
+// 			++id;
+// 		}
+// 	}
+//
+// 	matrix[0][1] = -20;
+//
+// 	for (size_t row = 0; row < dim; ++row)
+// 	{
+// 		for (size_t col = 0; col < dim; ++col)
+// 		{
+// 			std::cout << matrix[row][col] << '\t';
+// 		}
+// 		std::cout << '\n';
+// 	}
+//
+// 	std::cout << matrix.det() << '\n';
+// }
+
 // TEST(common, basic_1) { test_utils::run_test<double>("/common/basic_1"); }
 
 #ifdef ENABLE_BS_TESTS

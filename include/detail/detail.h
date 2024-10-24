@@ -38,6 +38,14 @@ class buffer_t
 		std::fill(data_, data_ + size_, value);
 	}
 
+	buffer_t(size_t dim, const T& value):
+		  size_(dim * dim)
+		, cols_(dim)
+		, data_(new T[size_]{})
+	{
+		std::fill(data_, data_ + size_, value);
+	}
+
 	template <typename Iter>
 	buffer_t(size_t rows, size_t cols, Iter begin, Iter end):
 		  size_(rows * cols)
