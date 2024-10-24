@@ -33,9 +33,27 @@ class buffer_t
 	buffer_t(size_t rows, size_t cols, const T& value):
 		  size_(rows * cols)
 		, cols_(cols)
-		, data_(new T[size_])
+		, data_(new T[size_]{})
 	{
 		std::fill(data_, data_ + size_, value);
+	}
+
+	template <typename Iter>
+	buffer_t(size_t rows, size_t cols, Iter begin, Iter end):
+		  size_(rows * cols)
+		, cols_(cols)
+		, data_(new T[size_]{})
+	{
+		Iter iter = begin;
+
+		for (size_t id = 0; id < size_; ++id)
+		{
+			data_[id] = *iter;
+
+			++iter;
+
+			if (iter == end) break;
+		}
 	}
 
 	buffer_t(const buffer_t& other):

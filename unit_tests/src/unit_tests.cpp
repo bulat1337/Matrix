@@ -1,9 +1,11 @@
 #include "matrix.h"
 
 #include <iostream>
+#include <string>        // for basic_string
+#include <vector>
 
 #include <gtest/gtest.h> // for Test, TestInfo (ptr only), Message, TEST
-#include <string>        // for basic_string
+
 
 class filled_buffer : public testing::Test
 {
@@ -109,6 +111,44 @@ TEST_F(filled_matrix, change_element)
 	matrix_[row_id][col_id] = new_value;
 
 	EXPECT_EQ(matrix_[row_id][col_id], new_value);
+}
+
+TEST(matrix_basics, container_copy)
+{
+	std::vector<int> vec;
+
+	for(int id = 0; id < 100; ++id)
+		vec.push_back(id);
+
+	size_t rows = 4;
+	size_t cols = 10;
+
+	matrix::matrix_t<int> matrix(rows, cols, vec.begin(), vec.end());
+
+	size_t vec_id = 0;
+	for (size_t row = 0; row < rows; ++row)
+	{
+		for (size_t col = 0; col < cols; ++col)
+		{
+			EXPECT_EQ(matrix[row][col], vec[vec_id]);
+			++vec_id;
+		}
+	}
+}
+
+TEST(matrix_basics, eye)
+{
+	size_t dim = 5;
+	matrix::matrix_t<int> matrix = matrix::matrix_t<int>::eye(5);
+
+	for (size_t row = 0; row < dim; ++row)
+	{
+		for (size_t col = 0; col < dim; ++col)
+		{
+			if (col == row) EXPECT_EQ(matrix[row][col], 1);
+			else EXPECT_EQ(matrix[row][col], 0);
+		}
+	}
 }
 
 // TEST(common, basic_1) { test_utils::run_test<double>("/common/basic_1"); }
