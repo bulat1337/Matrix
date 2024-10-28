@@ -9,7 +9,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 option(ENABLE_LOGGING "Enable logging" OFF)
-option(ENABLE_BIG_TESTS "Enables big data tests" OFF)
+
+option(ENABLE_BD_TESTS "Big data tests" OFF)
+set(ENABLE_BD_TESTS ${ENABLE_BD_TESTS} CACHE BOOL "Enable Big Data Tests" FORCE)
 
 set(RELEASE_COMPILE_OPTIONS
 	-O2
@@ -102,5 +104,28 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	)
 else()
 	target_compile_options(matrix.x PRIVATE ${RELEASE_COMPILE_OPTIONS})
+endif()
+
+# test generator
+
+add_executable(test_gen.x ./test_gen.cpp)
+target_include_directories(test_gen.x PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/include/detail
+	${CMAKE_CURRENT_SOURCE_DIR}/utils/include)
+
+if(ENABLE_LOGGING)
+	target_compile_definitions(test_gen.x PRIVATE ENABLE_LOGGING)
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	target_compile_definitions(test_gen.x PRIVATE DEBUG)
+	target_compile_options(test_gen.x PRIVATE ${DEBUG_COMPILE_OPTIONS})
+
+	target_link_options(test_gen.x PRIVATE
+		-fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,nonnull-attribute,null,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
+	)
+else()
+	target_compile_options(test_gen.x PRIVATE ${RELEASE_COMPILE_OPTIONS})
 endif()
 

@@ -1,46 +1,55 @@
 #ifndef DETAIL_H
 #define DETAIL_H
 
+#include <fstream>
+#include <optional>
+
 #include "matrix.h" // for Grid, calc_cell_size, get_triangles, inter...
+#include "status.h"
 
-namespace test_utils
-{
+namespace test_utils {
 
-namespace detail
-{
+namespace detail {
 
-inline std::string get_answer(const std::string &file_name)
-{
-    std::ifstream answer_file;
+inline double get_answer(const std::string &file_name) {
+  std::ifstream answer_file;
 
-    answer_file.exceptions(std::ifstream::badbit);
+  answer_file.exceptions(std::ifstream::badbit);
 
-    answer_file.open(file_name);
+  answer_file.open(file_name);
 
-    std::string answer((std::istreambuf_iterator<char>(answer_file)),
-                       std::istreambuf_iterator<char>());
+  double answer{};
 
-    return answer;
+  answer_file >> answer;
+
+  return answer;
 }
 
-template <typename T> std::string get_result(const std::string &file_name)
-{
-    t_inter::status_t status = t_inter::status_t::all_good;
+template <typename T>
+std::optional<double> get_result(const std::string &file_name) {
+  matrix::status_t status = matrix::status_t::all_good;
 
-    std::ifstream test_data;
+  std::ifstream test_data;
 
-    test_data.open(file_name);
+  test_data.open(file_name);
 
-    if (!test_data.is_open())
-        status = t_inter::status_t::invalid_open;
-    if (t_inter::check_status(status))
-        return std::string();
+  if (!test_data.is_open())
+    status = matrix::status_t::invalid_open;
+  if (matrix::check_status(status))
+    return std::nullopt;
 
-    std::string result;
+  size_t dim = 0;
+  test_data >> dim;
 
-	// get result using lib
+  matrix::sq_matrix_t<double> matrix(dim);
 
-    return result;
+  for (size_t row = 0; row < dim; ++row) {
+    for (size_t col = 0; col < dim; ++col) {
+      test_data >> matrix[row][col];
+    }
+  }
+
+  return matrix.det();
 }
 
 }; // namespace detail

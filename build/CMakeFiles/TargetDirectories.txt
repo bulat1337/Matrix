@@ -1,8 +1,0 @@
-/Users/bulatmotygullin/Documents/CPP_Industrial/Matrix/build/CMakeFiles/matrix.x.dir
-/Users/bulatmotygullin/Documents/CPP_Industrial/Matrix/build/CMakeFiles/test.dir
-/Users/bulatmotygullin/Documents/CPP_Industrial/Matrix/build/CMakeFiles/edit_cache.dir
-/Users/bulatmotygullin/Documents/CPP_Industrial/Matrix/build/CMakeFiles/rebuild_cache.dir
-/Users/bulatmotygullin/Documents/CPP_Industrial/Matrix/build/unit_tests/CMakeFiles/unit_tests.dir
-/Users/bulatmotygullin/Documents/CPP_Industrial/Matrix/build/unit_tests/CMakeFiles/test.dir
-/Users/bulatmotygullin/Documents/CPP_Industrial/Matrix/build/unit_tests/CMakeFiles/edit_cache.dir
-/Users/bulatmotygullin/Documents/CPP_Industrial/Matrix/build/unit_tests/CMakeFiles/rebuild_cache.dir

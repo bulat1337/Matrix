@@ -83,8 +83,12 @@ target_include_directories(unit_tests PRIVATE
 	${CMAKE_SOURCE_DIR}/utils/include
 )
 
+if(ENABLE_LOGGING)
+	target_compile_definitions(unit_tests PRIVATE ENABLE_LOGGING)
+endif()
+
 if(ENABLE_BD_TESTS)
-    target_compile_definitions(unit_tests PRIVATE BD_TESTS)
+    target_compile_definitions(unit_tests PRIVATE ENABLE_BD_TESTS)
 endif()
 
 enable_testing()
