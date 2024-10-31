@@ -133,7 +133,7 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
 
         std::random_device rd{};
         std::mt19937 gen(rd());
-        std::uniform_int_distribution<> distributor(4, 21);
+        std::uniform_int_distribution<> distributor(4, 20);
         std::uniform_int_distribution<> row_distr(0, static_cast<int>(dim - 1));
 
         for (size_t id = 0; id < dim; ++id)

@@ -12,6 +12,8 @@
 namespace test_utils
 {
 
+const double answer_tol = 1e-4;
+
 template <typename T> void run_test(const std::string &test_name)
 {
     std::string test_folder = "data";
@@ -22,7 +24,10 @@ template <typename T> void run_test(const std::string &test_name)
     auto result = detail::get_result<T>(test_path + ".dat");
     double answer = detail::get_answer(test_path + ".ans");
 
-    EXPECT_TRUE(std::fabs(result.value() - answer) < 1e-3);
+	std::cout << "answer: " << result.value() << '\n';
+	std::cout << "real answer: " << answer << '\n';
+
+    EXPECT_TRUE(std::fabs(result.value() - answer) < answer_tol);
 }
 
 }; // namespace test_utils
