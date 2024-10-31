@@ -3,15 +3,18 @@ cmake_minimum_required(VERSION 3.14)
 project(Main)
 
 enable_testing()
+
+option(ENABLE_LOGGING "Enable logging" OFF)
+set(ENABLE_LOGGING ${ENABLE_LOGGING} CACHE BOOL "Enable logging" FORCE)
+
+option(ENABLE_BD_TESTS "Enables big data tests" OFF)
+set(ENABLE_BD_TESTS ${ENABLE_BD_TESTS} CACHE BOOL "Enables big data tests" FORCE)
+
+set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Build type")
 add_subdirectory(unit_tests/)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-option(ENABLE_LOGGING "Enable logging" OFF)
-
-option(ENABLE_BD_TESTS "Big data tests" OFF)
-set(ENABLE_BD_TESTS ${ENABLE_BD_TESTS} CACHE BOOL "Enable Big Data Tests" FORCE)
 
 set(RELEASE_COMPILE_OPTIONS
 	-O2
@@ -36,7 +39,6 @@ set(DEBUG_COMPILE_OPTIONS
 	-O0
 	-Wall
 	-Wextra
-	-Weffc++
 	-Wc++14-compat
 	-Wmissing-declarations
 	-Wcast-align
@@ -87,9 +89,10 @@ set(DEBUG_COMPILE_OPTIONS
 
 add_executable(matrix.x ./main.cpp)
 target_include_directories(matrix.x PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}/include/detail
-	${CMAKE_CURRENT_SOURCE_DIR}/utils/include)
+	${CMAKE_SOURCE_DIR}/include
+	${CMAKE_SOURCE_DIR}/include/detail
+	${CMAKE_SOURCE_DIR}/utils/include
+	${CMAKE_SOURCE_DIR}/RB_Tree/include)
 
 if(ENABLE_LOGGING)
 	target_compile_definitions(matrix.x PRIVATE ENABLE_LOGGING)
@@ -110,9 +113,9 @@ endif()
 
 add_executable(test_gen.x ./test_gen.cpp)
 target_include_directories(test_gen.x PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}/include/detail
-	${CMAKE_CURRENT_SOURCE_DIR}/utils/include)
+	${CMAKE_SOURCE_DIR}/include
+	${CMAKE_SOURCE_DIR}/include/detail
+	${CMAKE_SOURCE_DIR}/utils/include)
 
 if(ENABLE_LOGGING)
 	target_compile_definitions(test_gen.x PRIVATE ENABLE_LOGGING)

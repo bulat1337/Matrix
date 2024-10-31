@@ -1,12 +1,12 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include <buffer.h>
 #include <cmath>
 #include <iostream>
 #include <random>
 #include <vector>
 
+#include "buffer.h"
 #include "log.h"
 #include "utils.h"
 

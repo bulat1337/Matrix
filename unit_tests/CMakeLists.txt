@@ -8,13 +8,29 @@ add_definitions(-DTEST_DATA_DIR=\"${TEST_DATA_DIR}\")
 
 find_package(GTest REQUIRED)
 
-set(COMPILE_OPTIONS
+set(RELEASE_COMPILE_OPTIONS
+	-O2
+	-fstack-protector
+	-fPIE
+	-fstrict-overflow
+	-Wformat-security
+	-Wformat=2
+	-Wall
+	-Wextra
+	-Wnon-virtual-dtor
+	-Woverloaded-virtual
+	-Wcast-align
+	-Wpointer-arith
+	-Wunreachable-code
+	-Wno-pre-c++17-compat
+)
+
+set(DEBUG_COMPILE_OPTIONS
 	-D_DEBUG
 	-ggdb3
 	-O0
 	-Wall
 	-Wextra
-	-Weffc++
 	-Wc++14-compat
 	-Wmissing-declarations
 	-Wcast-align
@@ -66,10 +82,16 @@ add_executable(unit_tests
 	main.cpp
 )
 
-target_compile_options(unit_tests PRIVATE ${COMPILE_OPTIONS})
-target_link_options(unit_tests PRIVATE
-	-fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,nonnull-attribute,null,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
-)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	target_compile_definitions(unit_tests PRIVATE DEBUG)
+	target_compile_options(unit_tests PRIVATE ${DEBUG_COMPILE_OPTIONS})
+
+	target_link_options(unit_tests PRIVATE
+		-fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,nonnull-attribute,null,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
+	)
+else()
+	target_compile_options(unit_tests PRIVATE ${RELEASE_COMPILE_OPTIONS})
+endif()
 
 target_link_libraries(unit_tests
 	GTest::GTest
@@ -81,11 +103,8 @@ target_include_directories(unit_tests PRIVATE
 	${CMAKE_SOURCE_DIR}/include
 	${CMAKE_SOURCE_DIR}/include/detail
 	${CMAKE_SOURCE_DIR}/utils/include
+	${CMAKE_SOURCE_DIR}/RB_Tree/include
 )
-
-if(ENABLE_LOGGING)
-	target_compile_definitions(unit_tests PRIVATE ENABLE_LOGGING)
-endif()
 
 if(ENABLE_BD_TESTS)
     target_compile_definitions(unit_tests PRIVATE ENABLE_BD_TESTS)
