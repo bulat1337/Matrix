@@ -114,6 +114,97 @@ TEST_F(filled_matrix, change_element)
     EXPECT_EQ(matrix_[row_id][col_id], new_value);
 }
 
+namespace
+{
+
+class ndc_t
+{
+  private:
+    [[maybe_unused]]int v_;
+
+  public:
+    ndc_t(int value) :v_(value) {}
+
+	bool operator <=>(const ndc_t& other) const = default;
+
+};
+
+};
+
+class ndc_elem_buffer : public testing::Test
+{
+  protected:
+    size_t rows_ = 3;
+    size_t cols_ = 4;
+
+    int value_ = 666;
+
+    matrix::detail::buffer_t<ndc_t> buffer_{rows_, cols_, value_};
+};
+
+TEST_F(ndc_elem_buffer, is_filled)
+{
+    for (size_t row = 0; row < rows_; ++row)
+    {
+        for (size_t col = 0; col < cols_; ++col)
+        {
+            EXPECT_EQ(buffer_[row][col], value_);
+        }
+    }
+}
+
+TEST_F(ndc_elem_buffer, copy_ctor)
+{
+    matrix::detail::buffer_t<ndc_t> buffer_copy(buffer_);
+
+    for (size_t row = 0; row < rows_; ++row)
+    {
+        for (size_t col = 0; col < cols_; ++col)
+        {
+            EXPECT_EQ(buffer_[row][col], buffer_copy[row][col]);
+        }
+    }
+}
+
+TEST_F(ndc_elem_buffer, copy_assign)
+{
+    matrix::detail::buffer_t<ndc_t> buffer_copy = buffer_;
+
+    for (size_t row = 0; row < rows_; ++row)
+    {
+        for (size_t col = 0; col < cols_; ++col)
+        {
+            EXPECT_EQ(buffer_[row][col], buffer_copy[row][col]);
+        }
+    }
+}
+
+TEST_F(ndc_elem_buffer, move_ctor)
+{
+    matrix::detail::buffer_t<ndc_t> buffer_copy(std::move(buffer_));
+
+    for (size_t row = 0; row < rows_; ++row)
+    {
+        for (size_t col = 0; col < cols_; ++col)
+        {
+            EXPECT_EQ(buffer_copy[row][col], value_);
+        }
+    }
+}
+
+TEST_F(ndc_elem_buffer, move_assign)
+{
+    matrix::detail::buffer_t<ndc_t> buffer_copy = std::move(buffer_);
+
+    for (size_t row = 0; row < rows_; ++row)
+    {
+        for (size_t col = 0; col < cols_; ++col)
+        {
+            EXPECT_EQ(buffer_copy[row][col], value_);
+        }
+    }
+}
+
 TEST(matrix_basics, container_copy)
 {
     std::vector<int> vec;

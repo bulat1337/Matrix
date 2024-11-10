@@ -30,34 +30,52 @@ template <typename T> class buffer_t
     size_t cols_ = 0;
     T *data_ = nullptr;
 
+  private:
+	void clean_data()
+	{
+		for (size_t id = 0; id < size_; ++id)
+		{
+			data_[id].~T();
+		}
+
+		operator delete(data_);
+	}
+
   public:
     buffer_t(size_t rows, size_t cols, const T &value)
         : size_(rows * cols)
         , cols_(cols)
-        , data_(new T[size_]{})
     {
-        std::fill(data_, data_ + size_, value);
+		data_ = reinterpret_cast<T*>(operator new(sizeof(T) * size_));
+
+		for (size_t id = 0; id < size_; ++id)
+		{
+			new (data_ + id) T(value);
+		}
     }
 
     buffer_t(size_t dim, const T &value)
         : size_(dim * dim)
         , cols_(dim)
-        , data_(new T[size_]{})
+		, data_(reinterpret_cast<T*>(operator new(sizeof(T) * size_)))
     {
-        std::fill(data_, data_ + size_, value);
+		for (size_t id = 0; id < size_; ++id)
+		{
+			new (data_ + id) T(value);
+		}
     }
 
     template <typename Iter>
     buffer_t(size_t rows, size_t cols, Iter begin, Iter end)
         : size_(rows * cols)
         , cols_(cols)
-        , data_(new T[size_]{})
+        , data_(reinterpret_cast<T*>(operator new(sizeof(T) * size_)))
     {
         Iter iter = begin;
 
         for (size_t id = 0; id < size_; ++id)
         {
-            data_[id] = *iter;
+			new (data_ + id) T(*iter);
 
             ++iter;
 
@@ -69,9 +87,12 @@ template <typename T> class buffer_t
     buffer_t(const buffer_t &other)
         : size_(other.size_)
         , cols_(other.cols_)
-        , data_(new T[size_])
+        , data_(reinterpret_cast<T*>(operator new(sizeof(T) * size_)))
     {
-        std::copy(other.data_, other.data_ + other.size_, data_);
+		for (size_t id = 0; id < size_; ++id)
+        {
+			new (data_ + id) T(other.data_[id]);
+		}
     }
 
     buffer_t &operator=(const buffer_t &other)
@@ -81,7 +102,10 @@ template <typename T> class buffer_t
         cols_ = other.cols_;
         size_ = other.size_;
 
-        std::copy(other.data_, other.data_ + other.size_, data_);
+		for (size_t id = 0; id < size_; ++id)
+        {
+			new (data_ + id) T(other.data_[id]);
+		}
     }
 
     buffer_t(buffer_t &&other)
@@ -108,7 +132,10 @@ template <typename T> class buffer_t
         return proxy_row_t<T>(data_ + index * cols_);
     }
 
-    ~buffer_t() { delete[] data_; }
+    ~buffer_t()
+	{
+		clean_data();
+	}
 };
 
 }; // namespace detail
