@@ -1,4 +1,8 @@
-#include <matrix.h>
+#include "buffer.h"  // for proxy_row_t
+
+#include <matrix.h>  // for sq_matrix_t, matrix_t
+#include <stddef.h>  // for size_t
+#include <iostream>  // for basic_istream, basic_ostream, basic_ios, cin
 
 int main()
 {

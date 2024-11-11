@@ -1,12 +1,12 @@
-#include "matrix.h"
+#include "buffer.h"       // for buffer_t, proxy_row_t
+#include "matrix.h"       // for matrix_t, sq_matrix_t
+#include "test_utils.h"   // for run_test
 
-#include <iostream>
-#include <string> // for basic_string
-#include <vector>
-
-#include "test_utils.h"
-
-#include <gtest/gtest.h> // for Test, TestInfo (ptr only), Message, TEST
+#include <gtest/gtest.h>  // for Test, TestInfo (ptr only), Message, CmpHelp...
+#include <stddef.h>       // for size_t
+#include <string>         // for basic_string
+#include <utility>        // for move
+#include <vector>         // for vector
 
 class filled_buffer : public testing::Test
 {

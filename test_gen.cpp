@@ -1,5 +1,5 @@
-#include <iostream>
-#include <matrix.h>
+#include <matrix.h>  // for sq_matrix_t
+#include <stddef.h>  // for size_t
 
 int main()
 {
