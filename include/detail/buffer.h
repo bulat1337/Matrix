@@ -42,6 +42,8 @@ template <typename T> class buffer_t
 	}
 
   public:
+	buffer_t() = default;
+
     buffer_t(size_t rows, size_t cols, const T &value)
         : size_(rows * cols)
         , cols_(cols)
@@ -95,48 +97,44 @@ template <typename T> class buffer_t
 		}
     }
 
-    buffer_t &operator=(const buffer_t &other)
+    buffer_t &operator=(buffer_t other)
     {
-        delete[] data_;
+		swap(*this, other);
 
-        cols_ = other.cols_;
-        size_ = other.size_;
-
-		for (size_t id = 0; id < size_; ++id)
-        {
-			new (data_ + id) T(other.data_[id]);
-		}
+		return *this;
     }
 
-    buffer_t(buffer_t &&other)
-        : size_(std::move(other.size_))
-        , cols_(std::move(other.cols_))
-        , data_(std::move(other.data_))
-    {
-        other.data_ = nullptr;
-    }
-
-    buffer_t &operator=(buffer_t &&other)
-    {
-        delete[] data_;
-
-        cols_ = std::move(other.cols_);
-        size_ = std::move(other.size_);
-        data_ = std::move(other.data_);
-
-        other.data_ = nullptr;
-    }
+    buffer_t(buffer_t &&other) noexcept:
+		buffer_t()
+	{
+		swap(other);
+	}
 
     proxy_row_t<T> operator[](size_t index)
     {
         return proxy_row_t<T>(data_ + index * cols_);
     }
 
+	void swap(buffer_t& other) noexcept
+	{
+		using std::swap;
+
+		swap(this->data_, other.data_);
+		swap(this->cols_, other.cols_);
+		swap(this->size_, other.size_);
+	}
+
     ~buffer_t()
 	{
 		clean_data();
 	}
 };
+
+template <typename T>
+inline void swap(buffer_t<T>& lhs, buffer_t<T>& rhs) noexcept
+{
+	lhs.swap(rhs);
+}
 
 }; // namespace detail
 
