@@ -24,9 +24,6 @@ template <typename T> void run_test(const std::string &test_name)
     auto result = detail::get_result<T>(test_path + ".dat");
     double answer = detail::get_answer(test_path + ".ans");
 
-	std::cout << "answer: " << result.value() << '\n';
-	std::cout << "real answer: " << answer << '\n';
-
     EXPECT_TRUE(std::fabs(result.value() - answer) < answer_tol);
 }
 

@@ -2,58 +2,58 @@
 #define LOG_H
 
 #if defined __has_include
-#if __has_include(<format>)
+#    if __has_include(<format>)
 
-#include <format>
+#        include <format>
 
-#ifdef ENABLE_LOGGING
+#        ifdef ENABLE_LOGGING
 
-#define MSG(msg)                                                               \
+#            define MSG(msg)                                                   \
                                                                                \
-    do                                                                         \
-    {                                                                          \
-        std::clog << __FUNCTION__ << ": ";                                     \
-        std::clog << msg;                                                      \
-    }                                                                          \
-    while (false)
+                do                                                             \
+                {                                                              \
+                    std::clog << __FUNCTION__ << ": ";                         \
+                    std::clog << msg;                                          \
+                }                                                              \
+                while (false)
 
-#define LOG(msg, ...)                                                          \
-    do                                                                         \
-    {                                                                          \
-        std::clog << __FUNCTION__ << ": ";                                     \
-        std::clog << std::format(msg, __VA_ARGS__);                            \
-    }                                                                          \
-    while (false)
+#            define LOG(msg, ...)                                              \
+                do                                                             \
+                {                                                              \
+                    std::clog << __FUNCTION__ << ": ";                         \
+                    std::clog << std::format(msg, __VA_ARGS__);                \
+                }                                                              \
+                while (false)
 
-#else
+#        else
 
-#define MSG(msg)                                                               \
-    do                                                                         \
-    {                                                                          \
-    }                                                                          \
-    while (false)
-#define LOG(msg, ...)                                                          \
-    do                                                                         \
-    {                                                                          \
-    }                                                                          \
-    while (false)
+#            define MSG(msg)                                                   \
+                do                                                             \
+                {                                                              \
+                }                                                              \
+                while (false)
+#            define LOG(msg, ...)                                              \
+                do                                                             \
+                {                                                              \
+                }                                                              \
+                while (false)
 
-#endif // ENABLE_LOGGING
+#        endif // ENABLE_LOGGING
 
-#else
+#    else
 
-#define MSG(msg)                                                               \
-    do                                                                         \
-    {                                                                          \
-    }                                                                          \
-    while (false)
-#define LOG(msg, ...)                                                          \
-    do                                                                         \
-    {                                                                          \
-    }                                                                          \
-    while (false)
+#        define MSG(msg)                                                       \
+            do                                                                 \
+            {                                                                  \
+            }                                                                  \
+            while (false)
+#        define LOG(msg, ...)                                                  \
+            do                                                                 \
+            {                                                                  \
+            }                                                                  \
+            while (false)
 
-#endif // __has_include(<format>)
-#endif // defined __has_include
+#    endif // __has_include(<format>)
+#endif     // defined __has_include
 
 #endif

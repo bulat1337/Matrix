@@ -12,13 +12,10 @@ enum class status_t
 
 inline bool check_status(status_t status)
 {
-    if (status == status_t::all_good)
-        return false;
-
     switch (status)
     {
         case status_t::all_good:
-            return true;
+            return false;
         case status_t::invalid_open:
             std::cerr << "ERROR: Can not open file\n";
             break;

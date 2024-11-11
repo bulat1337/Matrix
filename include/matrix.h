@@ -1,23 +1,18 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include "buffer.h"
+#include "log.h"
+#include "utils.h"
+
 #include <cmath>
 #include <iostream>
 #include <random>
 #include <vector>
 
-#include "buffer.h"
-#include "log.h"
-#include "utils.h"
 
 namespace matrix
 {
-
-template <typename T> class matrix_t;
-
-namespace detail
-{
-} // namespace detail
 
 template <typename T> class matrix_t
 {
@@ -77,7 +72,7 @@ template <typename T> class matrix_t
     size_t nrows() const { return rows_; }
     size_t ncols() const { return cols_; }
 
-    void dump(std::ostream &out = std::clog)
+    void dump(std::ostream &out = std::clog) const
     {
         for (size_t row = 0; row < rows_; ++row)
         {
@@ -171,7 +166,7 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
         return result;
     }
 
-    double det()
+    double det() const
     {
         MSG("Calculating determinant of:\n");
 #ifdef ENABLE_LOGGING
@@ -197,7 +192,7 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
                 {
                     LOG("{} -= {} * {}\n", upper[j][k], coeff, upper[col][k]);
                     upper[j][k] -= coeff * upper[col][k];
-                    if (std::fabs(upper[j][k]) < utils::fp_tolerance)
+                    if (std::fabs(upper[j][k] / upper[col][col]) < utils::fp_tolerance)
                         upper[j][k] = 0.0;
                 }
 

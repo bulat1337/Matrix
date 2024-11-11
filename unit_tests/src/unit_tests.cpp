@@ -120,16 +120,17 @@ namespace
 class ndc_t
 {
   private:
-    [[maybe_unused]]int v_;
+    [[maybe_unused]] int v_;
 
   public:
-    ndc_t(int value) :v_(value) {}
+    ndc_t(int value)
+        : v_(value)
+    {}
 
-	bool operator <=>(const ndc_t& other) const = default;
-
+    bool operator<=>(const ndc_t &other) const = default;
 };
 
-};
+}; // namespace
 
 class ndc_elem_buffer : public testing::Test
 {
@@ -258,8 +259,17 @@ TEST(common, basic_2) { test_utils::run_test<double>("/common/basic_2"); }
 #ifdef ENABLE_BD_TESTS
 
 TEST(bd_tests, dim_100) { test_utils::run_test<double>("/bd_tests/dim-100"); }
-TEST(bd_tests, dim_150_1) { test_utils::run_test<double>("/bd_tests/dim-150_1"); }
-TEST(bd_tests, dim_150_2) { test_utils::run_test<double>("/bd_tests/dim-150_2"); }
-TEST(bd_tests, dim_150_3) { test_utils::run_test<double>("/bd_tests/dim-150_3"); }
+TEST(bd_tests, dim_150_1)
+{
+    test_utils::run_test<double>("/bd_tests/dim-150_1");
+}
+TEST(bd_tests, dim_150_2)
+{
+    test_utils::run_test<double>("/bd_tests/dim-150_2");
+}
+TEST(bd_tests, dim_150_3)
+{
+    test_utils::run_test<double>("/bd_tests/dim-150_3");
+}
 
 #endif
