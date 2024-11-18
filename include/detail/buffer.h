@@ -48,7 +48,7 @@ template <typename T> class buffer_t
         : size_(rows * cols)
         , cols_(cols)
     {
-        data_ = reinterpret_cast<T *>(operator new(sizeof(T) * size_));
+        data_ = static_cast<T*>(operator new(sizeof(T) * size_));
 
         for (size_t id = 0; id < size_; ++id)
         {
@@ -59,7 +59,7 @@ template <typename T> class buffer_t
     buffer_t(size_t dim, const T &value)
         : size_(dim * dim)
         , cols_(dim)
-        , data_(reinterpret_cast<T *>(operator new(sizeof(T) * size_)))
+        , data_(static_cast<T*>(operator new(sizeof(T) * size_)))
     {
         for (size_t id = 0; id < size_; ++id)
         {
@@ -71,25 +71,28 @@ template <typename T> class buffer_t
     buffer_t(size_t rows, size_t cols, Iter begin, Iter end)
         : size_(rows * cols)
         , cols_(cols)
-        , data_(reinterpret_cast<T *>(operator new(sizeof(T) * size_)))
+        , data_(static_cast<T*>(operator new(sizeof(T) * size_)))
     {
         Iter iter = begin;
 
-        for (size_t id = 0; id < size_; ++id)
-        {
-            new (data_ + id) T(*iter);
+		size_t fill_id = 0;
 
-            ++iter;
+		while (iter != end && fill_id < size_)
+		{
+			new (data_ + fill_id) T(*iter);
 
-            if (iter == end)
-                break;
-        }
+			++fill_id;
+			++iter;
+		}
+
+        for (size_t id = fill_id; id < size_; ++id)
+			new (data_ + id) T{};
     }
 
     buffer_t(const buffer_t &other)
         : size_(other.size_)
         , cols_(other.cols_)
-        , data_(reinterpret_cast<T *>(operator new(sizeof(T) * size_)))
+        , data_(static_cast<T*>(operator new(sizeof(T) * size_)))
     {
         for (size_t id = 0; id < size_; ++id)
         {
@@ -97,27 +100,38 @@ template <typename T> class buffer_t
         }
     }
 
-    buffer_t &operator=(buffer_t other)
-    {
-        swap(*this, other);
-
-        return *this;
-    }
-
-    buffer_t(buffer_t &&other) noexcept
+    buffer_t(buffer_t&& other) noexcept
         : buffer_t()
     {
         swap(other);
     }
+
+	buffer_t &operator=(const buffer_t& other)
+	{
+		buffer_t copy(other);
+
+		swap(*this, copy);
+
+        return *this;
+	}
+
+	buffer_t &operator=(buffer_t&& other) noexcept
+	{
+		buffer_t moved(std::move(other));
+
+		swap(*this, moved);
+
+        return *this;
+	}
 
     proxy_row_t<T> operator[](size_t index)
     {
         return proxy_row_t<T>(data_ + index * cols_);
     }
 
-	const proxy_row_t<T> operator[](size_t index) const
+	proxy_row_t<const T> operator[](size_t index) const
     {
-        return proxy_row_t<T>(data_ + index * cols_);
+        return proxy_row_t<const T>(data_ + index * cols_);
     }
 
     void swap(buffer_t &other) noexcept

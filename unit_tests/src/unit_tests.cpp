@@ -206,7 +206,7 @@ TEST_F(ndc_elem_buffer, move_assign)
     }
 }
 
-TEST(matrix_basics, container_copy)
+TEST(matrix_basics, container_copy_overload)
 {
     std::vector<int> vec;
 
@@ -225,6 +225,39 @@ TEST(matrix_basics, container_copy)
         {
             EXPECT_EQ(matrix[row][col], vec[vec_id]);
             ++vec_id;
+        }
+    }
+}
+
+TEST(matrix_basics, container_copy_underload)
+{
+    std::vector<int> vec;
+
+    for (int id = 0; id < 10; ++id)
+        vec.push_back(id);
+
+    size_t rows = 4;
+    size_t cols = 10;
+
+    matrix::matrix_t<int> matrix(rows, cols, vec.begin(), vec.end());
+
+    size_t vec_id = 0;
+    for (size_t row = 0; row < 1; ++row)
+    {
+        for (size_t col = 0; col < cols; ++col)
+        {
+			std::cout << matrix[row][col] << " is " << vec[vec_id] << '\n';
+            EXPECT_EQ(matrix[row][col], vec[vec_id]);
+            ++vec_id;
+        }
+    }
+
+	for (size_t row = 1; row < rows; ++row)
+    {
+        for (size_t col = 0; col < cols; ++col)
+        {
+			std::cout << matrix[row][col] << " is " << 0 << '\n';
+            EXPECT_EQ(matrix[row][col], 0);
         }
     }
 }
