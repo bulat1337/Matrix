@@ -90,7 +90,7 @@ set(DEBUG_COMPILE_OPTIONS
 
 # ----- executable -----
 
-add_executable(matrix.x ./main.cpp)
+add_executable(matrix.x ./tmp_main.cpp)
 target_include_directories(matrix.x PRIVATE
 	${CMAKE_SOURCE_DIR}/include
 	${CMAKE_SOURCE_DIR}/include/detail

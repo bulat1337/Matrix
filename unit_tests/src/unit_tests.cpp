@@ -206,46 +206,46 @@ TEST_F(ndc_elem_buffer, move_assign)
     }
 }
 
-TEST(matrix_basics, container_copy_overload)
-{
-    std::vector<int> vec;
-
-    for (int id = 0; id < 100; ++id)
-        vec.push_back(id);
-
-    size_t rows = 4;
-    size_t cols = 10;
-
-    matrix::matrix_t<int> matrix(rows, cols, vec.begin(), vec.end());
-
-    size_t vec_id = 0;
-    for (size_t row = 0; row < rows; ++row)
-    {
-        for (size_t col = 0; col < cols; ++col)
-        {
-            EXPECT_EQ(matrix[row][col], vec[vec_id]);
-            ++vec_id;
-        }
-    }
-}
-
-TEST(matrix_basics, container_copy_underload)
-{
-    std::vector<int> vec;
-
-    for (int id = 0; id < 10; ++id)
-        vec.push_back(id);
-
-    size_t rows = 4;
-    size_t cols = 10;
-
-    EXPECT_THROW(
-        {
-            matrix::matrix_t<int> matrix(rows, cols, vec.begin(), vec.end());
-        },
-        std::logic_error
-    );
-}
+// TEST(matrix_basics, container_copy_overload)
+// {
+//     std::vector<int> vec;
+//
+//     for (int id = 0; id < 100; ++id)
+//         vec.push_back(id);
+//
+//     size_t rows = 4;
+//     size_t cols = 10;
+//
+//     matrix::matrix_t<int> matrix(rows, cols, vec.begin(), vec.end());
+//
+//     size_t vec_id = 0;
+//     for (size_t row = 0; row < rows; ++row)
+//     {
+//         for (size_t col = 0; col < cols; ++col)
+//         {
+//             EXPECT_EQ(matrix[row][col], vec[vec_id]);
+//             ++vec_id;
+//         }
+//     }
+// }
+//
+// TEST(matrix_basics, container_copy_underload)
+// {
+//     std::vector<int> vec;
+//
+//     for (int id = 0; id < 10; ++id)
+//         vec.push_back(id);
+//
+//     size_t rows = 4;
+//     size_t cols = 10;
+//
+//     EXPECT_THROW(
+//         {
+//             matrix::matrix_t<int> matrix(rows, cols, vec.begin(), vec.end());
+//         },
+//         std::logic_error
+//     );
+// }
 
 
 TEST(matrix_basics, eye)

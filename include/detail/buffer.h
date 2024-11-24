@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "log.h"
+
 namespace matrix
 {
 
@@ -34,12 +36,16 @@ template <typename T> class buffer_t
   private:
     void clean_data()
     {
-        for (size_t id = 0; id < size_; ++id)
-        {
-            data_[id].~T();
-        }
+		if (data_)
+		{
+			for (size_t id = 0; id < size_; ++id)
+			{
+				data_[id].~T();
+			}
 
-        operator delete(data_);
+			operator delete(data_);
+			data_ = nullptr;
+		}
     }
 
   public:
@@ -72,23 +78,24 @@ template <typename T> class buffer_t
     buffer_t(size_t rows, size_t cols, Iter begin, Iter end)
         : size_(rows * cols)
         , cols_(cols)
-        , data_(static_cast<T*>(operator new(sizeof(T) * size_)))
     {
+		if (static_cast<size_t>(std::distance(begin, end)) < size_)
+			throw std::logic_error(	"Not enough elements "
+									"for matrix initialization");
+
+		data_ = static_cast<T*>(operator new(sizeof(T) * size_));
+
         Iter iter = begin;
 
 		size_t fill_id = 0;
 
 		while (iter != end && fill_id < size_)
 		{
-			new (data_ + fill_id) T(*iter); // throw here ???
+			new (data_ + fill_id) T(*iter);
 
 			++fill_id;
 			++iter;
 		}
-
-		if (fill_id < size_)
-			throw std::logic_error(	"Not enough elements "
-									"for matrix initialization");
     }
 
     buffer_t(const buffer_t &other)
@@ -145,7 +152,11 @@ template <typename T> class buffer_t
         swap(this->size_, other.size_);
     }
 
-    ~buffer_t() { clean_data(); }
+    ~buffer_t()
+	{
+		MSG("Destructor called\n");
+		clean_data();
+	}
 };
 
 template <typename T>
