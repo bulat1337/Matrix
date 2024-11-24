@@ -7,13 +7,23 @@
 int main()
 {
     size_t dim = 0;
-    std::cin >> dim;
+    if (!std::cin.good() || !(std::cin >> dim))
+	{
+		std::cerr << "The dimension of the matrix must be a number.\n";
+		return 0;
+	}
 
     matrix::sq_matrix_t<double> matrix(dim);
 
     for (size_t row = 0; row < dim; ++row)
         for (size_t col = 0; col < dim; ++col)
-            std::cin >> matrix[row][col];
+		{
+            if (!std::cin.good() || !(std::cin >> matrix[row][col]))
+			{
+				std::cerr << "The matrix elements must be numbers.\n";
+				return 0;
+			}
+		}
 
     std::cout << matrix.det() << '\n';
 

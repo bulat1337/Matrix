@@ -79,7 +79,7 @@ template <typename T> class buffer_t
 
 		while (iter != end && fill_id < size_)
 		{
-			new (data_ + fill_id) T(*iter);
+			new (data_ + fill_id) T(*iter); // throw here ???
 
 			++fill_id;
 			++iter;
@@ -96,7 +96,7 @@ template <typename T> class buffer_t
     {
         for (size_t id = 0; id < size_; ++id)
         {
-            new (data_ + id) T(other.data_[id]);
+            new (data_ + id) T(other.data_[id]); // throw here ???
         }
     }
 
@@ -151,6 +151,7 @@ inline void swap(buffer_t<T> &lhs, buffer_t<T> &rhs) noexcept
 {
     lhs.swap(rhs);
 }
+
 
 }; // namespace detail
 
