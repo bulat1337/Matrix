@@ -136,8 +136,8 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
             result.data_[id][id] = static_cast<double>(distributor(gen)) / 10;
         }
 
+#ifdef DUMP_MATRIX
         MSG("\nDIAGONAL:\n");
-#ifdef ENABLE_LOGGING
         result.dump();
 #endif
 
@@ -159,8 +159,8 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
                 }
             }
 
+#ifdef DUMP_MATRIX
         MSG("\nRANDOM:\n");
-#ifdef ENABLE_LOGGING
         result.dump();
 #endif
         return result;
@@ -168,8 +168,8 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
 
     double det() const
     {
+#ifdef DUMP_MATRIX
         MSG("Calculating determinant of:\n");
-#ifdef ENABLE_LOGGING
         dump();
 #endif
 
@@ -196,13 +196,13 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
                         upper[j][k] = 0.0;
                 }
 
-#ifdef ENABLE_LOGGING
+#ifdef DUMP_MATRIX
                 upper.dump();
 #endif
             }
         }
 
-#ifdef ENABLE_LOGGING
+#ifdef DUMP_MATRIX
         upper.dump();
 #endif
 

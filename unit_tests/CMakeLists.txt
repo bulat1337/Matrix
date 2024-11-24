@@ -112,7 +112,11 @@ endif()
 
 if(ENABLE_LOGGING)
     target_compile_definitions(unit_tests PRIVATE ENABLE_LOGGING)
+	if(DUMP_MATRIX)
+		target_compile_definitions(unit_tests PRIVATE DUMP_MATRIX)
+	endif()
 endif()
+
 
 enable_testing()
 add_test(NAME UnitTests COMMAND unit_tests)

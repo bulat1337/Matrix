@@ -239,28 +239,14 @@ TEST(matrix_basics, container_copy_underload)
     size_t rows = 4;
     size_t cols = 10;
 
-    matrix::matrix_t<int> matrix(rows, cols, vec.begin(), vec.end());
-
-    size_t vec_id = 0;
-    for (size_t row = 0; row < 1; ++row)
-    {
-        for (size_t col = 0; col < cols; ++col)
+    EXPECT_THROW(
         {
-			std::cout << matrix[row][col] << " is " << vec[vec_id] << '\n';
-            EXPECT_EQ(matrix[row][col], vec[vec_id]);
-            ++vec_id;
-        }
-    }
-
-	for (size_t row = 1; row < rows; ++row)
-    {
-        for (size_t col = 0; col < cols; ++col)
-        {
-			std::cout << matrix[row][col] << " is " << 0 << '\n';
-            EXPECT_EQ(matrix[row][col], 0);
-        }
-    }
+            matrix::matrix_t<int> matrix(rows, cols, vec.begin(), vec.end());
+        },
+        std::logic_error
+    );
 }
+
 
 TEST(matrix_basics, eye)
 {

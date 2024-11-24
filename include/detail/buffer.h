@@ -2,6 +2,7 @@
 #define DETAIL
 
 #include <algorithm>
+#include <iostream>
 
 namespace matrix
 {
@@ -85,8 +86,9 @@ template <typename T> class buffer_t
 			++iter;
 		}
 
-        for (size_t id = fill_id; id < size_; ++id)
-			new (data_ + id) T{};
+		if (fill_id < size_)
+			throw std::logic_error(	"Not enough elements "
+									"for matrix initialization");
     }
 
     buffer_t(const buffer_t &other)

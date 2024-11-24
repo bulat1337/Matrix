@@ -7,6 +7,9 @@ enable_testing()
 option(ENABLE_LOGGING "Enable logging" OFF)
 set(ENABLE_LOGGING ${ENABLE_LOGGING} CACHE BOOL "Enable logging" FORCE)
 
+option(DUMP_MATRIX "Enables matrix dump" OFF)
+set(DUMP_MATRIX ${DUMP_MATRIX} CACHE BOOL "Enables matrix dump" FORCE)
+
 option(ENABLE_BD_TESTS "Enables big data tests" OFF)
 set(ENABLE_BD_TESTS ${ENABLE_BD_TESTS} CACHE BOOL "Enables big data tests" FORCE)
 
@@ -119,7 +122,11 @@ target_include_directories(test_gen.x PRIVATE
 
 if(ENABLE_LOGGING)
 	target_compile_definitions(test_gen.x PRIVATE ENABLE_LOGGING)
+	if(DUMP_MATRIX)
+		target_compile_definitions(test_gen.x PRIVATE DUMP_MATRIX)
+	endif()
 endif()
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	target_compile_definitions(test_gen.x PRIVATE DEBUG)
