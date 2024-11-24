@@ -63,7 +63,7 @@ template <typename T> class buffer_t
         }
     }
 
-    buffer_t(size_t di , const T &value)
+    buffer_t(size_t dim, const T &value)
         : size_(dim * dim)
         , cols_(dim)
         , data_(static_cast<T*>(operator new(sizeof(T) * size_)))
