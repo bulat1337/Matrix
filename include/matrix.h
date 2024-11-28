@@ -14,12 +14,14 @@
 namespace matrix
 {
 
-template <typename T> class matrix_t
+template <typename T> class matrix_t : private detail::buffer_t<T>
 {
   protected:
-    size_t rows_ = 0;
-    size_t cols_ = 0;
-    detail::buffer_t<T> data_;
+	using detail::buffer_t<T>::ctored_;
+	using detail::buffer_t<T>::data_;
+	using detail::buffer_t<T>::size_;
+	using detail::buffer_t<T>::rows_;
+	using detail::buffer_t<T>::cols_;
 
   protected:
     bool pivot(size_t col, size_t &swap_counter)
@@ -51,23 +53,63 @@ template <typename T> class matrix_t
 
   public:
     matrix_t(size_t rows, size_t cols, const T &value = T{})
-        : rows_(rows)
-        , cols_(cols)
-        , data_(rows, cols, value)
-    {}
+        : detail::buffer_t<T>(rows, cols)
+	{
+		for (size_t id = 0; id < size_; ++id)
+        {
+            new (data_ + id) T(value);
+			++ctored_;
+        }
+	}
 
     template <typename Iter>
     matrix_t(size_t rows, size_t cols, Iter begin, Iter end)
-        : rows_(rows)
-        , cols_(cols)
-        , data_(rows, cols, begin, end)
-    {}
-
-    detail::proxy_row_t<T> operator[](size_t index) { return data_[index]; }
-    const detail::proxy_row_t<T> operator[](size_t index) const
+        : detail::buffer_t<T>(rows, cols)
     {
-        return data_[index];
-    }
+		if (static_cast<size_t>(std::distance(begin, end)) < size_)
+			throw std::logic_error(	"Not enough elements "
+									"for matrix initialization");
+
+        Iter iter = begin;
+
+		for (size_t filled = 0; filled < size_; ++filled, ++iter)
+		{
+			new (data_ + filled) T(*iter);
+			++ctored_;
+		}
+	}
+
+	matrix_t(matrix_t&& other) = default;
+	matrix_t& operator= (matrix_t&& other) = default;
+
+	matrix_t(const matrix_t& other)
+		: detail::buffer_t<T>(other.rows_, other.cols_)
+	{
+		for (size_t id = 0; id < size_; ++id)
+        {
+            new (data_ + id) T(other.data_[id]);
+			++ctored_;
+        }
+	}
+
+	matrix_t& operator= (const matrix_t<T>& other)
+	{
+		matrix_t tmp(other);
+		std::swap(*this, tmp);
+
+		return *this;
+	}
+
+	detail::proxy_row_t<T> operator[](size_t index)
+	{
+		return detail::buffer_t<T>::operator[](index);
+	}
+
+	const detail::proxy_row_t<T> operator[](size_t index) const
+	{
+		return detail::buffer_t<T>::operator[](index);
+	}
+
 
     size_t nrows() const { return rows_; }
     size_t ncols() const { return cols_; }
@@ -90,7 +132,7 @@ template <typename T> class matrix_t
             return;
         for (size_t col = 0; col < cols_; ++col)
         {
-            std::swap(data_[row1][col], data_[row2][col]);
+            std::swap((*this)[row1][col], (*this)[row2][col]);
         }
     }
 };
@@ -117,7 +159,7 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
         sq_matrix_t<T> result(dim);
         for (size_t id = 0; id < dim; ++id)
         {
-            result.data_[id][id] = 1;
+            result[id][id] = 1;
         }
         return result;
     }
@@ -133,7 +175,7 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
 
         for (size_t id = 0; id < dim; ++id)
         {
-            result.data_[id][id] = static_cast<double>(distributor(gen)) / 10;
+            result[id][id] = static_cast<double>(distributor(gen)) / 10;
         }
 
 #ifdef DUMP_MATRIX
@@ -185,12 +227,12 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
 
             for (size_t j = col + 1; j < dim; j++)
             {
-                LOG("coeff = {} / {}\n", upper[j][col], upper[col][col]);
+                // LOG("coeff = {} / {}\n", upper[j][col], upper[col][col]);
                 double coeff = upper[j][col] / upper[col][col];
 
                 for (size_t k = col; k < dim; k++)
                 {
-                    LOG("{} -= {} * {}\n", upper[j][k], coeff, upper[col][k]);
+                    // LOG("{} -= {} * {}\n", upper[j][k], coeff, upper[col][k]);
                     upper[j][k] -= coeff * upper[col][k];
                     if (std::fabs(upper[j][k] / upper[col][col]) < utils::fp_tolerance)
                         upper[j][k] = 0.0;

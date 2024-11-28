@@ -10,7 +10,7 @@ set(ENABLE_LOGGING ${ENABLE_LOGGING} CACHE BOOL "Enable logging" FORCE)
 option(DUMP_MATRIX "Enables matrix dump" OFF)
 set(DUMP_MATRIX ${DUMP_MATRIX} CACHE BOOL "Enables matrix dump" FORCE)
 
-option(ENABLE_BD_TESTS "Enables big data tests" OFF)
+option(ENABLE_BD_TESTS "Enables big data tests" ON)
 set(ENABLE_BD_TESTS ${ENABLE_BD_TESTS} CACHE BOOL "Enables big data tests" FORCE)
 
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Build type")
