@@ -37,7 +37,6 @@ template <typename T> class buffer_t
     T *data_ = nullptr;
 	size_t ctored_ = 0;
 
-  public:
     buffer_t() = default;
 
     buffer_t(size_t rows, size_t cols)
