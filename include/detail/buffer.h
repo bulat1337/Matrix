@@ -12,7 +12,8 @@ namespace matrix
 namespace detail
 {
 
-template <typename T> class buffer_t
+template <typename T>
+class buffer_t
 {
   protected:
 	size_t size_ = 0;
@@ -24,19 +25,19 @@ template <typename T> class buffer_t
 
 	buffer_t(size_t size)
 		: size_(size)
-		, data_(static_cast<T*>(operator new(sizeof(T) * size))) {}
+		, data_(static_cast<T *>(operator new(sizeof(T) * size)))
+	{}
 
 	buffer_t(const buffer_t &other) = delete;
-	buffer_t &operator=(const buffer_t& other) = delete;
+	buffer_t &operator=(const buffer_t &other) = delete;
 
-	buffer_t(buffer_t&& other) noexcept
+	buffer_t(buffer_t &&other) noexcept
 		: buffer_t()
 	{
 		swap(other);
 	}
 
-
-	buffer_t &operator=(buffer_t&& other) noexcept
+	buffer_t &operator=(buffer_t &&other) noexcept
 	{
 		buffer_t moved(std::move(other));
 
@@ -71,7 +72,6 @@ inline void swap(buffer_t<T> &lhs, buffer_t<T> &rhs) noexcept
 {
 	lhs.swap(rhs);
 }
-
 
 }; // namespace detail
 

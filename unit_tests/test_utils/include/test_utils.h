@@ -14,17 +14,18 @@ namespace test_utils
 
 const double answer_tol = 1e-4;
 
-template <typename T> void run_test(const std::string &test_name)
+template <typename T>
+void run_test(const std::string &test_name)
 {
-    std::string test_folder = "data";
+	std::string test_folder = "data";
 
-    std::string test_path =
-        std::string(TEST_DATA_DIR) + test_folder + test_name;
+	std::string test_path =
+		std::string(TEST_DATA_DIR) + test_folder + test_name;
 
-    auto result = detail::get_result<T>(test_path + ".dat");
-    double answer = detail::get_answer(test_path + ".ans");
+	auto result = detail::get_result<T>(test_path + ".dat");
+	double answer = detail::get_answer(test_path + ".ans");
 
-    EXPECT_TRUE(std::fabs(result.value() - answer) < answer_tol);
+	EXPECT_TRUE(std::fabs(result.value() - answer) < answer_tol);
 }
 
 }; // namespace test_utils

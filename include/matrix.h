@@ -2,8 +2,9 @@
 #define MATRIX_H
 
 #include "buffer.h"
-#include "proxy_row.h"
+#include "imatrix.h"
 #include "log.h"
+#include "proxy_row.h"
 #include "utils.h"
 
 #include <cmath>
@@ -11,52 +12,23 @@
 #include <random>
 #include <vector>
 
-
 namespace matrix
 {
 
-template <typename T> class matrix_t : private detail::buffer_t<T>
+template <typename T>
+class matrix_t final : public detail::imatrix_t<T>
 {
-  protected:
+  private:
 	size_t rows_ = 0;
 	size_t cols_ = 0;
 
-  protected:
-	using detail::buffer_t<T>::ctored_;
-	using detail::buffer_t<T>::data_;
-	using detail::buffer_t<T>::size_;
-
-  protected:
-	bool pivot(size_t col, size_t &swap_counter)
-	{
-		T max_elem = std::fabs((*this)[col][col]);
-		size_t max_id = col;
-
-		for (size_t row = col; row < nrows(); ++row)
-		{
-			T elem = std::fabs((*this)[row][col]);
-			if (elem > max_elem)
-			{
-				max_elem = elem;
-				max_id = row;
-			}
-		}
-
-		if (max_elem < utils::fp_tolerance)
-			return false;
-
-		if (max_id != col)
-		{
-			swap_rows(col, max_id);
-			++swap_counter;
-		}
-
-		return true;
-	}
+	using detail::imatrix_t<T>::ctored_;
+	using detail::imatrix_t<T>::data_;
+	using detail::imatrix_t<T>::size_;
 
   public:
 	matrix_t(size_t rows, size_t cols, const T &value = T{})
-		: detail::buffer_t<T>(rows * cols)
+		: detail::imatrix_t<T>(rows * cols)
 		, rows_(rows)
 		, cols_(cols)
 	{
@@ -69,13 +41,13 @@ template <typename T> class matrix_t : private detail::buffer_t<T>
 
 	template <typename Iter>
 	matrix_t(size_t rows, size_t cols, Iter begin, Iter end)
-		: detail::buffer_t<T>(rows * cols)
+		: detail::imatrix_t<T>(rows * cols)
 		, rows_(rows)
 		, cols_(cols)
 	{
 		if (static_cast<size_t>(std::distance(begin, end)) < size_)
-			throw std::logic_error(	"Not enough elements "
-									"for matrix initialization");
+			throw std::logic_error("Not enough elements "
+								   "for matrix initialization");
 
 		Iter iter = begin;
 
@@ -86,11 +58,11 @@ template <typename T> class matrix_t : private detail::buffer_t<T>
 		}
 	}
 
-	matrix_t(matrix_t&& other) = default;
-	matrix_t& operator= (matrix_t&& other) = default;
+	matrix_t(matrix_t &&other) = default;
+	matrix_t &operator=(matrix_t &&other) = default;
 
-	matrix_t(const matrix_t& other)
-		: detail::buffer_t<T>(other.rows_ * other.cols_)
+	matrix_t(const matrix_t &other)
+		: detail::imatrix_t<T>(other.rows_ * other.cols_)
 		, rows_(other.rows_)
 		, cols_(other.cols_)
 	{
@@ -101,7 +73,7 @@ template <typename T> class matrix_t : private detail::buffer_t<T>
 		}
 	}
 
-	matrix_t& operator= (const matrix_t<T>& other)
+	matrix_t &operator=(const matrix_t<T> &other)
 	{
 		matrix_t tmp(other);
 		std::swap(*this, tmp);
@@ -109,58 +81,138 @@ template <typename T> class matrix_t : private detail::buffer_t<T>
 		return *this;
 	}
 
-	detail::proxy_row_t<T> operator[](size_t index)
+	detail::proxy_row_t<T> operator[](size_t index) override
 	{
 		return detail::proxy_row_t<T>(data_ + index * cols_);
 	}
 
-	detail::proxy_row_t<const T> operator[](size_t index) const
+	detail::proxy_row_t<const T> operator[](size_t index) const override
 	{
 		return detail::proxy_row_t<const T>(data_ + index * cols_);
 	}
 
-	size_t nrows() const { return rows_; }
-	size_t ncols() const { return cols_; }
+	size_t nrows() const override { return rows_; }
+	size_t ncols() const override { return cols_; }
 
-	void dump(std::ostream &out = std::clog) const
+	void dump(std::ostream &out = std::clog) const override
 	{
 		for (size_t row = 0; row < rows_; ++row)
 		{
 			for (size_t col = 0; col < cols_; ++col)
 			{
-				out << data_[row][col] << "\t\t";
+				out << (*this)[row][col] << "\t\t";
 			}
 			out << "\n\n";
 		}
 	}
 
-	void swap_rows(size_t row1, size_t row2)
+	void swap_rows(size_t row_1, size_t row_2) override
 	{
-		if (row1 == row2)
+		if (row_1 == row_2)
 			return;
 		for (size_t col = 0; col < cols_; ++col)
 		{
-			std::swap((*this)[row1][col], (*this)[row2][col]);
+			std::swap((*this)[row_1][col], (*this)[row_2][col]);
 		}
 	}
 };
 
-template <typename T> class sq_matrix_t : public matrix_t<T>
+template <typename T>
+class sq_matrix_t : public detail::imatrix_t<T>
 {
-  public:
-	using matrix_t<T>::dump;
-	using matrix_t<T>::rows_;
-	using matrix_t<T>::cols_;
+  private:
+	size_t dim_ = 0;
+
+	using detail::imatrix_t<T>::ctored_;
+	using detail::imatrix_t<T>::data_;
+	using detail::imatrix_t<T>::size_;
 
   public:
 	sq_matrix_t(size_t dim, const T &value = T{})
-		: matrix_t<T>(dim, dim, value)
-	{}
+		: detail::imatrix_t<T>(dim * dim)
+		, dim_(dim)
+	{
+		for (size_t id = 0; id < size_; ++id)
+		{
+			new (data_ + id) T(value);
+			++ctored_;
+		}
+	}
 
 	template <typename Iter>
 	sq_matrix_t(size_t dim, Iter begin, Iter end)
-		: matrix_t<T>(dim, dim, begin, end)
-	{}
+		: detail::imatrix_t<T>(dim * dim)
+		, dim_(dim)
+	{
+		if (static_cast<size_t>(std::distance(begin, end)) < size_)
+			throw std::logic_error("Not enough elements "
+								   "for matrix initialization");
+
+		Iter iter = begin;
+
+		for (size_t filled = 0; filled < size_; ++filled, ++iter)
+		{
+			new (data_ + filled) T(*iter);
+			++ctored_;
+		}
+	}
+
+	sq_matrix_t(sq_matrix_t &&other) = default;
+	sq_matrix_t &operator=(sq_matrix_t &&other) = default;
+
+	sq_matrix_t(const sq_matrix_t &other)
+		: detail::imatrix_t<T>(other.dim_ * other.dim_)
+		, dim_(other.dim_)
+	{
+		for (size_t id = 0; id < size_; ++id)
+		{
+			new (data_ + id) T(other.data_[id]);
+			++ctored_;
+		}
+	}
+
+	sq_matrix_t &operator=(const sq_matrix_t<T> &other)
+	{
+		sq_matrix_t tmp(other);
+		std::swap(*this, tmp);
+
+		return *this;
+	}
+
+	detail::proxy_row_t<T> operator[](size_t index) override
+	{
+		return detail::proxy_row_t<T>(data_ + index * dim_);
+	}
+
+	detail::proxy_row_t<const T> operator[](size_t index) const override
+	{
+		return detail::proxy_row_t<const T>(data_ + index * dim_);
+	}
+
+	size_t nrows() const override { return dim_; }
+	size_t ncols() const override { return dim_; }
+
+	void dump(std::ostream &out = std::clog) const override
+	{
+		for (size_t row = 0; row < dim_; ++row)
+		{
+			for (size_t col = 0; col < dim_; ++col)
+			{
+				out << (*this)[row][col] << "\t\t";
+			}
+			out << "\n\n";
+		}
+	}
+
+	void swap_rows(size_t row_1, size_t row_2) override
+	{
+		if (row_1 == row_2)
+			return;
+		for (size_t col = 0; col < dim_; ++col)
+		{
+			std::swap((*this)[row_1][col], (*this)[row_2][col]);
+		}
+	}
 
 	static sq_matrix_t eye(size_t dim)
 	{
@@ -223,7 +275,7 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
 		dump();
 #endif
 
-		size_t dim = rows_;
+		size_t dim = dim_;
 		sq_matrix_t<double> upper(*this);
 
 		size_t swap_counter = 0;
@@ -235,14 +287,13 @@ template <typename T> class sq_matrix_t : public matrix_t<T>
 
 			for (size_t j = col + 1; j < dim; j++)
 			{
-				// LOG("coeff = {} / {}\n", upper[j][col], upper[col][col]);
 				double coeff = upper[j][col] / upper[col][col];
 
 				for (size_t k = col; k < dim; k++)
 				{
-					// LOG("{} -= {} * {}\n", upper[j][k], coeff, upper[col][k]);
 					upper[j][k] -= coeff * upper[col][k];
-					if (std::fabs(upper[j][k] / upper[col][col]) < utils::fp_tolerance)
+					if (std::fabs(upper[j][k] / upper[col][col]) <
+						utils::fp_tolerance)
 						upper[j][k] = 0.0;
 				}
 
