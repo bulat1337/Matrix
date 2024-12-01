@@ -6,24 +6,24 @@ namespace matrix
 
 enum class status_t
 {
-    all_good,
-    invalid_open
+	all_good,
+	invalid_open
 };
 
 inline bool check_status(status_t status)
 {
-    switch (status)
-    {
-        case status_t::all_good:
-            return false;
-        case status_t::invalid_open:
-            std::cerr << "ERROR: Can not open file\n";
-            break;
-        default:
-            std::cerr << "ERROR: Unknown\n";
-    }
+	switch (status)
+	{
+		case status_t::all_good:
+			return false;
+		case status_t::invalid_open:
+			std::cerr << "ERROR: Can not open file\n";
+			break;
+		default:
+			std::cerr << "ERROR: Unknown\n";
+	}
 
-    return true;
+	return true;
 }
 
 }; // namespace matrix
